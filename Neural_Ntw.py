@@ -35,7 +35,7 @@ class SimpleNN(nn.Module):
         return self.model(x)
 
 # Function to train the neural network
-def train_neural_network(dataframe, epochs=2500, batch_size=32, learning_rate=0.001, use_gpu=True, threshold=0.5):
+def train_neural_network(dataframe, epochs=1000, batch_size=32, learning_rate=0.001, use_gpu=True, threshold=0.5):
     # Check for GPU
     device = torch.device("cuda" if use_gpu and torch.cuda.is_available() else "cpu")
 
