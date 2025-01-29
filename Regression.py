@@ -19,7 +19,7 @@ X, y = smote.fit_resample(X, y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 #Creates and trains a LogisticRegression model using the training data
-model = LogisticRegression(max_iter=1000000)
+model = LogisticRegression(solver='saga', max_iter=1000000)
 model.fit(X_train, y_train)
 
 #Tests the model using the testing data
