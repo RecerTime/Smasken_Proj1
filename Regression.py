@@ -19,7 +19,7 @@ X, y = smote.fit_resample(X, y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 #Creates and trains a LogisticRegression model using the training data
-model = LogisticRegression(max_iter=10000)
+model = LogisticRegression(max_iter=1000000)
 model.fit(X_train, y_train)
 
 #Tests the model using the testing data
@@ -30,8 +30,7 @@ cm = confusion_matrix(y_test, y_pred)
 
 #Calculates and prints the percentage of correct predictions for both high and low demand 
 per_class_accuracy = cm.diagonal() / cm.sum(axis=1)
-print(f"Per-Class Accuracy: Low Demand: {per_class_accuracy[0]:.4f},
-       High Demand: {per_class_accuracy[1]:.4f}")
+print(f"Per-Class Accuracy: Low Demand: {per_class_accuracy[0]:.4f}, High Demand: {per_class_accuracy[1]:.4f}")
 
 #Shows the confusion matrix
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0, 1])
