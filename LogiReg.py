@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from Preprocessing import Preprocess
 
 import sklearn.preprocessing as skl_pre
 import sklearn.linear_model as skl_lm
@@ -29,14 +30,14 @@ parameters = [
     "weekday",
     "summertime",
     "temp",
-    "dew",  # remove
-    "humidity",  # remove
+    "dew",
+    "humidity",
     "precip",
-    "snow",  # remove
+    "snow",
     "snowdepth",
     "windspeed",
-    "cloudcover",  # remove
-    "visibility",  # remove
+    "cloudcover",
+    "visibility",
 ]
 input = training_data[parameters]
 output = training_data["increase_stock"]
