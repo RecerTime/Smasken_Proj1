@@ -37,5 +37,7 @@ def Preprocess(df):
     df["month"] = np.sin(2 * np.pi * df["month"] / 12)
     # Make a rush hour flag
     # Make a workday flag which is all days where it is weekday and not holiday
+    df["workday"] = np.zeros(len(df))
+    df["workday"] = (df["weekday"] == 1) & (df["holiday"] == 0)
     # Normalize all non binary values using either min max or Z dont know which
     return df
