@@ -51,5 +51,11 @@ def Preprocess(df):
         )
     ) and df["workday"] == 1
     # Make a bad weather flag
+    # Slight shower: Less than 2 mm per hour.
+    # Moderate shower: Greater than 2 mm, but less than 10 mm per hour.
+    # Heavy shower: Greater than 10 mm per hour, but less than 50 mm per hour.
+    df["bad_weather"] = np.zeros(df_lenght)
+    df["bad_weather"] = df["precip"] > 2 or df["snowdepth"] > 0
+    # Snow is always 0 so no need to look for it
     # Normalize all non binary values using either min max or Z dont know which :(
     return df
