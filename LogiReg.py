@@ -4,6 +4,7 @@ import random
 import matplotlib.pyplot as plt
 from Preprocessing import Preprocess
 
+import seaborn as sb
 import sklearn.preprocessing as skl_pre
 import sklearn.linear_model as skl_lm
 import sklearn.discriminant_analysis as skl_da
@@ -47,4 +48,5 @@ test_input = test_data[parameters]
 test_output = test_data["increase_stock"]
 predictions = model.predict(test_input)
 con_matrix = skl_me.confusion_matrix(test_output, predictions)
-print(con_matrix)
+skl_me.ConfusionMatrixDisplay(con_matrix).plot()
+plt.show()
