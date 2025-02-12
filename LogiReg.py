@@ -15,6 +15,7 @@ path = "training_data_vt2025.csv"
 data = pd.read_csv(path, na_values="?", dtype={"ID": str}).dropna().reset_index()
 new_data = Preprocess(data)
 n = data.shape[0]
+# Use the sklearn thing instead
 numbers = np.arange(n)
 numbers_list = numbers.tolist()
 random_numbers = random.sample(numbers_list, int((n + 1) / 2))
