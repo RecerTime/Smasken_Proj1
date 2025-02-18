@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, f1_score
 
 
-r = 0.4
+r = 0.5
 path = "training_data_vt2025.csv"
 df = pd.read_csv(path, na_values="?", dtype={"ID": str})
 df = Preprocess(df)
@@ -65,6 +65,3 @@ def hyper_para_optimisation():
     )
     search.fit(x_train, y_train)
     print(search.best_params_)
-
-
-hyper_para_optimisation()
