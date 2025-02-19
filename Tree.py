@@ -17,10 +17,10 @@ path = "training_data_vt2025.csv"
 df = pd.read_csv(path, na_values="?", dtype={"ID": str})
 df = Preprocess(df)
 print(Correlation(df))
-X = df.drop(columns="increase_stock")
+x = df.drop(columns="increase_stock")
 y = df["increase_stock"].values
 x_train, x_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    x, y, test_size=0.2, random_state=42
 )
 rfc = RandomForestClassifier(
     n_estimators=140,
