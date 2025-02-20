@@ -59,6 +59,19 @@ if not missing_values_check(data_preprocessed):
     naive_clf_recall = recall_score(y_test, naive_clf.predict(X_test))
     naive_clf_f1 = f1_score(y_test, naive_clf.predict(X_test))
 
+    # Results
+    results = {
+        "Model": ["Naive", "Untuned", "Tuned"],
+        "Accuracy": [naive_accuracy, accuracy, tuned_model_accuracy],
+        "Confusion Matrix": [naive_conf_matrix, conf_matrix, tuned_model_conf_matrix],
+        "Precision": [naive_clf_precision, untuned_precision, tuned_precision],
+        "Recall": [naive_clf_recall, untuned_recall, tuned_recall],
+        "F1": [naive_clf_f1, untuned_f1, tuned_f1]
+    }
+
+    results_df = pd.DataFrame(results)
+    print(results_df)
+
     fpr_untuned, tpr_untuned, thresholds_untuned = roc_curve(y_test, log_reg_model.predict_proba(X_test)[:, 1])
     fpr_tuned, tpr_tuned, thresholds_tuned = roc_curve(y_test, tuned_model.predict_proba(X_test)[:, 1])
     fpr_naive, tpr_naive, thresholds_naive = roc_curve(y_test, naive_clf.predict_proba(X_test)[:, 1])
@@ -76,20 +89,6 @@ if not missing_values_check(data_preprocessed):
     untuned_conf_matrix_disp.plot()
     tuned_conf_matrix_disp.plot()
     plt.show()
-
-    print(random_search_cv.best_params_)
-    # Results
-    results = {
-        "Model": ["Naive", "Untuned", "Tuned"],
-        "Accuracy": [naive_accuracy, accuracy, tuned_model_accuracy],
-        "Confusion Matrix": [naive_conf_matrix, conf_matrix, tuned_model_conf_matrix],
-        "Precision": [naive_clf_precision, untuned_precision, tuned_precision],
-        "Recall": [naive_clf_recall, untuned_recall, tuned_recall],
-        "F1": [naive_clf_f1, untuned_f1, tuned_f1]
-    }
-
-    results_df = pd.DataFrame(results)
-    print(results_df)
 
 else:
     print("Values missing in data")
