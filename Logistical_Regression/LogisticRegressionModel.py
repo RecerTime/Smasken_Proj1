@@ -1,7 +1,9 @@
 #Import packages
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 from sklearn.dummy import DummyClassifier
+from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve
 
 #Import functions
 from Logistical_Regression.functions.load_data import load_data
@@ -41,15 +43,45 @@ if not missing_values_check(data_preprocessed):
         "max_iter": [100, 1000, 2500, 5000, 10000]
     }
 
-    random_search_cv = random_search_cv(log_reg_model, parameters,30)
+    random_search_cv = random_search_cv(log_reg_model, parameters,100)
     random_search_model = random_search_cv.fit(X_train, y_train)
     random_search_accuracy, random_search_conf_matrix = predict_and_find_accuracy(random_search_model, X_test, y_test)
 
+    untuned_precision = precision_score(y_test, log_reg_model.predict(X_test))
+    untuned_recall = recall_score(y_test, log_reg_model.predict(X_test))
+    untuned_f1 = f1_score(y_test, log_reg_model.predict(X_test))
+
+    tuned_precision = precision_score(y_test, random_search_model.predict(X_test))
+    tuned_recall = recall_score(y_test, random_search_model.predict(X_test))
+    tuned_f1 = f1_score(y_test, random_search_model.predict(X_test))
+
+    naive_clf_precision = precision_score(y_test, naive_clf.predict(X_test))
+    naive_clf_recall = recall_score(y_test, naive_clf.predict(X_test))
+    naive_clf_f1 = f1_score(y_test, naive_clf.predict(X_test))
+
+
+
+    fpr_untuned, tpr_untuned, thresholds_untuned = roc_curve(y_test, log_reg_model.predict_proba(X_test)[:,1])
+    fpr_tuned, tpr_tuned, thresholds_tuned = roc_curve(y_test, random_search_model.predict_proba(X_test)[:,1])
+    fpr_naive, tpr_naive, thresholds_naive = roc_curve(y_test, naive_clf.predict_proba(X_test)[:,1])
+    plt.plot(fpr_untuned, tpr_untuned, label="Untuned")
+    plt.plot(fpr_tuned, tpr_tuned, label="Tuned")
+    plt.plot(fpr_naive, tpr_naive, label="Naive", linestyle="--")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.legend()
+    plt.show()
+
+
+    print(random_search_cv.best_params_)
     #Results
     results = {
         "Model": ["Naive", "Untuned", "Tuned"],
         "Accuracy": [naive_accuracy, accuracy, random_search_accuracy],
         "Confusion Matrix": [naive_conf_matrix, conf_matrix, random_search_conf_matrix],
+        "Precision": [naive_clf_precision, untuned_precision, tuned_precision],
+        "Recall": [naive_clf_recall, untuned_recall, tuned_recall],
+        "F1": [naive_clf_f1, untuned_f1, tuned_f1]
     }
 
     results_df = pd.DataFrame(results)
