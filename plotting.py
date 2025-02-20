@@ -13,7 +13,7 @@ n_month, total_month = np.zeros(12), np.zeros(12)
 n_weekday, total_weekday = np.zeros(2), np.zeros(2)
 n_summertime, total_summertime = np.zeros(2), np.zeros(2)
 n_holiday, total_holiday = np.zeros(2), np.zeros(2)
-# Calculate numerators and denominators for each category
+
 for idx in data.index:
     # Hour of day
     hour = int(data.loc[idx, "hour_of_day"])
@@ -27,7 +27,7 @@ for idx in data.index:
     if data.loc[idx, "increase_stock"] == 1:
         n_day[day] += 1
 
-    # Month (adjusted to 0-based index)
+    # Month
     month = int(data.loc[idx, "month"]) - 1
     total_month[month] += 1
     if data.loc[idx, "increase_stock"] == 1:
@@ -60,7 +60,7 @@ prob_holiday = n_holiday / total_holiday
 
 
 data = Preprocess(data)
-
+print(Correlation(data))
 # Calculate good_weather probabilities
 n_goodweather, total_goodweather = np.zeros(2), np.zeros(2)
 for idx in data.index:
