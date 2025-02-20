@@ -3,16 +3,17 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.dummy import DummyClassifier
-from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve, ConfusionMatrixDisplay
+from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve, ConfusionMatrixDisplay, \
+    classification_report
 
+from Logistical_Regression.functions.create_logistic_model import create_logistic_model
 # Import functions
 from Logistical_Regression.functions.load_data import load_data
 from Logistical_Regression.functions.missing_values_check import missing_values_check
-from Logistical_Regression.functions.preprocess_data import preprocess_data
-from Logistical_Regression.functions.splice_data import splice_data
-from Logistical_Regression.functions.create_logistic_model import create_logistic_model
 from Logistical_Regression.functions.predict_and_find_accuracy import predict_and_find_accuracy
+from Logistical_Regression.functions.preprocess_data import preprocess_data
 from Logistical_Regression.functions.random_search_cv import random_search_cv
+from Logistical_Regression.functions.splice_data import splice_data
 
 # Load data
 data = load_data()
@@ -47,40 +48,12 @@ if not missing_values_check(data_preprocessed):
     tuned_model = random_search_cv.fit(X_train, y_train)
     tuned_model_accuracy, tuned_model_conf_matrix = predict_and_find_accuracy(tuned_model, X_test, y_test)
 
-    untuned_precision = precision_score(y_test, log_reg_model.predict(X_test))
-    untuned_recall = recall_score(y_test, log_reg_model.predict(X_test))
-    untuned_f1 = f1_score(y_test, log_reg_model.predict(X_test))
-
-    tuned_precision = precision_score(y_test, tuned_model.predict(X_test))
-    tuned_recall = recall_score(y_test, tuned_model.predict(X_test))
-    tuned_f1 = f1_score(y_test, tuned_model.predict(X_test))
-
-    naive_clf_precision = precision_score(y_test, naive_clf.predict(X_test))
-    naive_clf_recall = recall_score(y_test, naive_clf.predict(X_test))
-    naive_clf_f1 = f1_score(y_test, naive_clf.predict(X_test))
-
-    # Results
-    results = {
-        "Model": ["Naive", "Untuned", "Tuned"],
-        "Accuracy": [naive_accuracy, accuracy, tuned_model_accuracy],
-        "Confusion Matrix": [naive_conf_matrix, conf_matrix, tuned_model_conf_matrix],
-        "Precision": [naive_clf_precision, untuned_precision, tuned_precision],
-        "Recall": [naive_clf_recall, untuned_recall, tuned_recall],
-        "F1": [naive_clf_f1, untuned_f1, tuned_f1]
-    }
-
-    results_df = pd.DataFrame(results)
-    print(results_df)
-
-    fpr_untuned, tpr_untuned, thresholds_untuned = roc_curve(y_test, log_reg_model.predict_proba(X_test)[:, 1])
-    fpr_tuned, tpr_tuned, thresholds_tuned = roc_curve(y_test, tuned_model.predict_proba(X_test)[:, 1])
-    fpr_naive, tpr_naive, thresholds_naive = roc_curve(y_test, naive_clf.predict_proba(X_test)[:, 1])
-    plt.plot(fpr_untuned, tpr_untuned, label="Untuned")
-    plt.plot(fpr_tuned, tpr_tuned, label="Tuned")
-    plt.plot(fpr_naive, tpr_naive, label="Naive", linestyle="--")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.legend()
+    naive_y_pred = naive_clf.predict(X_test)
+    untuned_y_pred = log_reg_model.predict(X_test)
+    tuned_model_y_pred = tuned_model.predict(X_test)
+    print(classification_report(y_test, naive_y_pred))
+    print(classification_report(y_test, untuned_y_pred))
+    print(classification_report(y_test, tuned_model_y_pred))
 
     naive_conf_matrix_disp = ConfusionMatrixDisplay(naive_conf_matrix,display_labels=[0, 1])
     untuned_conf_matrix_disp = ConfusionMatrixDisplay(conf_matrix, display_labels=[0, 1])

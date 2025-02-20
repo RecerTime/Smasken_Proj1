@@ -7,5 +7,6 @@ def random_search_cv(log_reg_model,parameters, iterations):
         param_distributions=parameters,
         n_iter=iterations,
         n_jobs=-1,
+        scoring="recall"
     )
     return random_search
