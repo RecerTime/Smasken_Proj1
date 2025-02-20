@@ -15,14 +15,14 @@ df = Preprocess(df_raw)
 X = df.drop(columns='increase_stock')
 y = df['increase_stock'].values
 
-# Define hyperparameter grid
-param_grid = {'reg_param': np.linspace(0, 1)}
-
 # Split into training and testing data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Perform GridSearchCV with 10-fold cross-validation on QDA model to get best hyperparameters
-model = GridSearchCV(estimator=QuadraticDiscriminantAnalysis(), param_grid=param_grid, cv=50, scoring='accuracy', n_jobs=-1, verbose=1)
+# Define hyperparameter grid
+param_grid = {'reg_param': np.linspace(0, 1)}
+
+# Perform GridSearchCV with 5-fold cross-validation on QDA model to get best hyperparameters
+model = GridSearchCV(estimator=QuadraticDiscriminantAnalysis(), param_grid=param_grid, scoring='recall_macro', n_jobs=-1)
 model.fit(X_train, y_train)
 
 # Print best hyperparameter
@@ -36,7 +36,6 @@ cm = confusion_matrix(y_test, y_pred)
 
 # Print classification metrics
 print(classification_report(y_test, y_pred))
-
 #Shows the confusion matrix
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0, 1])
 disp.plot()
