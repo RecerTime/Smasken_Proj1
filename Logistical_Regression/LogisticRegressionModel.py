@@ -44,23 +44,23 @@ if not missing_values_check(data_preprocessed):
     }
 
     random_search_cv = random_search_cv(log_reg_model, parameters, 100)
-    random_search_model = random_search_cv.fit(X_train, y_train)
-    random_search_accuracy, random_search_conf_matrix = predict_and_find_accuracy(random_search_model, X_test, y_test)
+    tuned_model = random_search_cv.fit(X_train, y_train)
+    tuned_model_accuracy, tuned_model_conf_matrix = predict_and_find_accuracy(tuned_model, X_test, y_test)
 
     untuned_precision = precision_score(y_test, log_reg_model.predict(X_test))
     untuned_recall = recall_score(y_test, log_reg_model.predict(X_test))
     untuned_f1 = f1_score(y_test, log_reg_model.predict(X_test))
 
-    tuned_precision = precision_score(y_test, random_search_model.predict(X_test))
-    tuned_recall = recall_score(y_test, random_search_model.predict(X_test))
-    tuned_f1 = f1_score(y_test, random_search_model.predict(X_test))
+    tuned_precision = precision_score(y_test, tuned_model.predict(X_test))
+    tuned_recall = recall_score(y_test, tuned_model.predict(X_test))
+    tuned_f1 = f1_score(y_test, tuned_model.predict(X_test))
 
     naive_clf_precision = precision_score(y_test, naive_clf.predict(X_test))
     naive_clf_recall = recall_score(y_test, naive_clf.predict(X_test))
     naive_clf_f1 = f1_score(y_test, naive_clf.predict(X_test))
 
     fpr_untuned, tpr_untuned, thresholds_untuned = roc_curve(y_test, log_reg_model.predict_proba(X_test)[:, 1])
-    fpr_tuned, tpr_tuned, thresholds_tuned = roc_curve(y_test, random_search_model.predict_proba(X_test)[:, 1])
+    fpr_tuned, tpr_tuned, thresholds_tuned = roc_curve(y_test, tuned_model.predict_proba(X_test)[:, 1])
     fpr_naive, tpr_naive, thresholds_naive = roc_curve(y_test, naive_clf.predict_proba(X_test)[:, 1])
     plt.plot(fpr_untuned, tpr_untuned, label="Untuned")
     plt.plot(fpr_tuned, tpr_tuned, label="Tuned")
@@ -71,7 +71,7 @@ if not missing_values_check(data_preprocessed):
 
     naive_conf_matrix_disp = ConfusionMatrixDisplay(naive_conf_matrix,display_labels=[0, 1])
     untuned_conf_matrix_disp = ConfusionMatrixDisplay(conf_matrix, display_labels=[0, 1])
-    tuned_conf_matrix_disp = ConfusionMatrixDisplay(random_search_conf_matrix,display_labels=[0, 1])
+    tuned_conf_matrix_disp = ConfusionMatrixDisplay(tuned_model_conf_matrix,display_labels=[0, 1])
     naive_conf_matrix_disp.plot()
     untuned_conf_matrix_disp.plot()
     tuned_conf_matrix_disp.plot()
@@ -81,8 +81,8 @@ if not missing_values_check(data_preprocessed):
     # Results
     results = {
         "Model": ["Naive", "Untuned", "Tuned"],
-        "Accuracy": [naive_accuracy, accuracy, random_search_accuracy],
-        "Confusion Matrix": [naive_conf_matrix, conf_matrix, random_search_conf_matrix],
+        "Accuracy": [naive_accuracy, accuracy, tuned_model_accuracy],
+        "Confusion Matrix": [naive_conf_matrix, conf_matrix, tuned_model_conf_matrix],
         "Precision": [naive_clf_precision, untuned_precision, tuned_precision],
         "Recall": [naive_clf_recall, untuned_recall, tuned_recall],
         "F1": [naive_clf_f1, untuned_f1, tuned_f1]
