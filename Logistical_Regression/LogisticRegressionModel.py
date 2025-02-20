@@ -68,7 +68,6 @@ if not missing_values_check(data_preprocessed):
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.legend()
-    plt.show()
 
     naive_conf_matrix_disp = ConfusionMatrixDisplay(naive_conf_matrix,display_labels=[0, 1])
     untuned_conf_matrix_disp = ConfusionMatrixDisplay(conf_matrix, display_labels=[0, 1])
@@ -76,6 +75,7 @@ if not missing_values_check(data_preprocessed):
     naive_conf_matrix_disp.plot()
     untuned_conf_matrix_disp.plot()
     tuned_conf_matrix_disp.plot()
+    plt.show()
 
     print(random_search_cv.best_params_)
     # Results
