@@ -4,92 +4,135 @@ import matplotlib.pyplot as plt
 from Preprocessing import Preprocess, Correlation
 
 path = "training_data_vt2025.csv"
-df = pd.read_csv(path, na_values="?", dtype={"ID": str})
-n_hour = np.zeros(24)
-n_day = np.zeros(7)
-n_month = np.zeros(12)
-n_weekday = np.zeros(2)
-n_summertime = np.zeros(2)
-n_goodweather = np.zeros(2)
+data = pd.read_csv(path, na_values="?", dtype={"ID": str})
 
-for idx in df.index:
-    if df.loc[idx, "increase_stock"] == 1:
-        hour = int(df.loc[idx, "hour_of_day"])
+# Initialize arrays for counts and totals
+n_hour, total_hour = np.zeros(24), np.zeros(24)
+n_day, total_day = np.zeros(7), np.zeros(7)
+n_month, total_month = np.zeros(12), np.zeros(12)
+n_weekday, total_weekday = np.zeros(2), np.zeros(2)
+n_summertime, total_summertime = np.zeros(2), np.zeros(2)
+n_holiday, total_holiday = np.zeros(2), np.zeros(2)
+# Calculate numerators and denominators for each category
+for idx in data.index:
+    # Hour of day
+    hour = int(data.loc[idx, "hour_of_day"])
+    total_hour[hour] += 1
+    if data.loc[idx, "increase_stock"] == 1:
         n_hour[hour] += 1
 
-for idx in df.index:
-    if df.loc[idx, "increase_stock"] == 1:
-        day = int(df.loc[idx, "day_of_week"])
+    # Day of week
+    day = int(data.loc[idx, "day_of_week"])
+    total_day[day] += 1
+    if data.loc[idx, "increase_stock"] == 1:
         n_day[day] += 1
 
-for idx in df.index:
-    if df.loc[idx, "increase_stock"] == 1:
-        month = int(df.loc[idx, "month"]) - 1
+    # Month (adjusted to 0-based index)
+    month = int(data.loc[idx, "month"]) - 1
+    total_month[month] += 1
+    if data.loc[idx, "increase_stock"] == 1:
         n_month[month] += 1
 
-for idx in df.index:
-    if df.loc[idx, "increase_stock"] == 1:
-        weekday = int(df.loc[idx, "weekday"])
+    # Weekday
+    weekday = int(data.loc[idx, "weekday"])
+    total_weekday[weekday] += 1
+    if data.loc[idx, "increase_stock"] == 1:
         n_weekday[weekday] += 1
 
-for idx in df.index:
-    if df.loc[idx, "increase_stock"] == 1:
-        summertime = int(df.loc[idx, "summertime"])
+    # Summertime
+    summertime = int(data.loc[idx, "summertime"])
+    total_summertime[summertime] += 1
+    if data.loc[idx, "increase_stock"] == 1:
         n_summertime[summertime] += 1
+    # holiday
+    holiday = int(data.loc[idx, "holiday"])
+    total_holiday[holiday] += 1
+    if data.loc[idx, "increase_stock"] == 1:
+        n_holiday[holiday] += 1
 
-df = Preprocess(df)
-for idx in df.index:
-    if df.loc[idx, "increase_stock"] == 1:
-        weather = int(df.loc[idx, "good_weather"])
+# Compute probabilities
+prob_hour = n_hour / total_hour
+prob_day = n_day / total_day
+prob_month = n_month / total_month
+prob_weekday = n_weekday / total_weekday
+prob_summertime = n_summertime / total_summertime
+prob_holiday = n_holiday / total_holiday
+
+
+data = Preprocess(data)
+
+# Calculate good_weather probabilities
+n_goodweather, total_goodweather = np.zeros(2), np.zeros(2)
+for idx in data.index:
+    weather = int(data.loc[idx, "good_weather"])
+    total_goodweather[weather] += 1
+    if data.loc[idx, "increase_stock"] == 1:
         n_goodweather[weather] += 1
 
-plt.figure(figsize=(10, 6))
-plt.plot(range(24), n_hour, "o-")
-plt.xlabel("Hour of the Day")
-plt.ylabel("Number of High bike demand Events")
-plt.title("High bike demand Events by Hour of the Day")
-plt.xticks(range(24))
-plt.grid(True)
-plt.savefig("figHour.pdf", bbox_inches="tight")
+prob_goodweather = n_goodweather / total_goodweather
 
-plt.figure(figsize=(10, 6))
-plt.plot(range(7), n_day, "o-")
-plt.xlabel("day of the week")
-plt.ylabel("Number High bike demand Events")
-plt.title("High bike demand Events by day of week")
-plt.xticks(range(7))
-plt.grid(True)
-plt.savefig("figDay.pdf", bbox_inches="tight")
 
-plt.figure(figsize=(10, 6))
-plt.plot(range(12), n_month, "o-")
-plt.xlabel("month")
-plt.ylabel("Number of High bike demand Events")
-plt.title("High bike demand Events by month")
-plt.xticks(range(12))
-plt.grid(True)
-plt.savefig("figMonth.pdf", bbox_inches="tight")
+def plot_probability(x, prob, xlabel, title, file, bar=False, xticks=None, labels=None):
+    plt.figure(figsize=(10, 6))
+    if bar:
+        plt.bar(range(len(prob)), prob)
+        if labels:
+            plt.xticks(range(len(prob)), labels)
+    else:
+        plt.plot(x, prob, "o-")
+        plt.xticks(x)
+        plt.grid(True)
+    plt.xlabel(xlabel)
+    plt.ylabel("Probability")
+    plt.title(title)
+    plt.savefig(file, bbox_inches="tight")
+    plt.close()
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(2), n_weekday)
-plt.xlabel("weekday")
-plt.ylabel("Number of High bike demand Events")
-plt.title("High bike demand Events by weekday")
-plt.xticks(range(2))
-plt.savefig("figWeekday.pdf", bbox_inches="tight")
 
-plt.figure(figsize=(10, 6))
-plt.bar(range(2), n_summertime)
-plt.xlabel("summertime")
-plt.ylabel("Number of High bike demand Events")
-plt.title("High bike demand Events by summertime")
-plt.xticks(range(2))
-plt.savefig("figSummertime.pdf", bbox_inches="tight")
-
-plt.figure(figsize=(10, 6))
-plt.bar(range(2), n_goodweather)
-plt.xlabel("goodweather")
-plt.ylabel("Number of High bike demand Events")
-plt.title("High bike demand Events by goodweather")
-plt.xticks(range(2))
-plt.savefig("figGoodweather.pdf", bbox_inches="tight")
+plot_probability(
+    range(24),
+    prob_hour,
+    "Hour of the Day",
+    "Probability of High Bike Demand by Hour",
+    "figHour.pdf",
+)
+plot_probability(
+    range(7), prob_day, "Day of the Week", "Probability by Day of Week", "figDay.pdf"
+)
+plot_probability(range(12), prob_month, "Month", "Probability by Month", "figMonth.pdf")
+plot_probability(
+    range(2),
+    prob_weekday,
+    "Weekday",
+    "Probability by Weekday",
+    "figWeekday.pdf",
+    bar=True,
+    labels=["Non-Weekday", "Weekday"],
+)
+plot_probability(
+    range(2),
+    prob_summertime,
+    "Summertime",
+    "Probability by Summertime",
+    "figSummertime.pdf",
+    bar=True,
+    labels=["No", "Yes"],
+)
+plot_probability(
+    range(2),
+    prob_holiday,
+    "Holiday",
+    "Probability by holiday",
+    "figHoliday.pdf",
+    bar=True,
+    labels=["No", "Yes"],
+)
+plot_probability(
+    range(2),
+    prob_goodweather,
+    "Good Weather",
+    "Probability by Good Weather",
+    "figGoodweather.pdf",
+    bar=True,
+    labels=["No", "Yes"],
+)

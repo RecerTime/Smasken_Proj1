@@ -23,12 +23,12 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, test_size=0.2, random_state=42
 )
 rfc = RandomForestClassifier(
-    n_estimators=140,
+    n_estimators=328,
     max_depth=5,
-    min_samples_leaf=5,
+    min_samples_leaf=8,
     min_samples_split=14,
     max_features="sqrt",
-    class_weight="balanced",
+    class_weight="balanced_subsample",
     random_state=42,
     bootstrap=False,
 )
@@ -57,7 +57,7 @@ def hyper_para_optimisation(model):
     search = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_dist,
-        n_iter=100,
+        n_iter=500,
         cv=cv,
         scoring="recall",  #  for better false negative score
         n_jobs=-1,
@@ -65,3 +65,6 @@ def hyper_para_optimisation(model):
     )
     search.fit(x_train, y_train)
     return search.best_estimator_
+
+
+print(hyper_para_optimisation(model))
