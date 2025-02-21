@@ -38,10 +38,11 @@ if not missing_values_check(data_preprocessed):
 
     # Use random search to tune the model
     parameters = {
-        "C": np.logspace(-4, 4, 50),
-        "penalty": ["l1", "l2", "elasticnet", None],
-        "solver": ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
-        "max_iter": [100, 1000, 2500, 5000, 10000]
+        "C": [0.01, 0.1, 0.5, 1, 5, 10],
+        "penalty": ["l1", "l2"],
+        "solver": ["liblinear", "saga"],
+        "max_iter": [1000, 5000, 10000],
+        "class_weight": ["balanced"]
     }
 
     random_search_cv = random_search_cv(log_reg_model, parameters, 100)
@@ -54,6 +55,7 @@ if not missing_values_check(data_preprocessed):
     print(classification_report(y_test, naive_y_pred))
     print(classification_report(y_test, untuned_y_pred))
     print(classification_report(y_test, tuned_model_y_pred))
+    print(random_search_cv.best_params_)
 
     naive_conf_matrix_disp = ConfusionMatrixDisplay(naive_conf_matrix,display_labels=[0, 1])
     untuned_conf_matrix_disp = ConfusionMatrixDisplay(conf_matrix, display_labels=[0, 1])
